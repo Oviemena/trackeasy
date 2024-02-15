@@ -1,0 +1,57 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum PriorityType {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum StatusType {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Task {
+  id String @id @default(uuid())
+  name String @db.VarChar(255)
+  priority PriorityType @default(NORMAL)
+  creatdAt DateTime @default(now())
+  deadline DateTime
+  duration DateTime
+  status StatusType @default(IN_PROGRESS)
+  assigned_to Actor? @relation(fields: [assignedId], references: [id])
+  assignedId String @unique
+  done Boolean @default(false)
+  delayed Boolean @default(false)
+  // escalatorId Int
+  escalators Escalator[]
+  //  @relation(fields: [escalatorId], references: [id])
+
+}
+
+model Actor {
+  id String @id @default(uuid())
+  name String @db.VarChar(255)
+  task Task?
+  email String @unique
+  phone String @unique
+}
+
+model Escalator {
+  id String @id @default(uuid())
+  name String @db.VarChar(255)
+  phone String @unique
+  email String @unique
+  task Task? @relation(fields: [taskId], references: [id])
+  taskId String?
+}
