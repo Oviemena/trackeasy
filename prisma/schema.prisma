@@ -16,12 +16,11 @@ model Task {
   deadline    DateTime
   duration    String
   status      StatusType   @default(IN_PROGRESS)
-  assignedId  String       @unique
   done        Boolean      @default(false)
   delayed     Boolean      @default(false)
-  escalatorId String
-  assigned_to Actor        @relation(fields: [assignedId], references: [id])
-  escalator   Escalator    @relation(fields: [escalatorId], references: [id])
+  assigned_to Actor[]        
+  escalator   Escalator @relation(fields: [escalatorId], references: [id])  
+  escalatorId String  
 }
 
 model Actor {
@@ -29,8 +28,7 @@ model Actor {
   name      String     @db.VarChar(255)
   email     String     @unique
   phone     String     @unique
-  escalator Escalator?
-  tasks     Task?
+  task Task[]
 }
 
 model Escalator {
@@ -38,9 +36,7 @@ model Escalator {
   name        String @db.VarChar(255)
   phone       String @unique
   email       String @unique
-  assignedId  String @unique
-  assigned_to Actor  @relation(fields: [assignedId], references: [id])
-  tasks       Task[]
+  tasks      Task[]
 }
 
 enum PriorityType {

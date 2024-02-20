@@ -11,9 +11,8 @@ CREATE TABLE "Task" (
     "priority" "PriorityType" NOT NULL DEFAULT 'NORMAL',
     "creatdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deadline" TIMESTAMP(3) NOT NULL,
-    "duration" TIMESTAMP(3) NOT NULL,
+    "duration" TEXT NOT NULL,
     "status" "StatusType" NOT NULL DEFAULT 'IN_PROGRESS',
-    "assignedId" TEXT NOT NULL,
     "done" BOOLEAN NOT NULL DEFAULT false,
     "delayed" BOOLEAN NOT NULL DEFAULT false,
     "escalatorId" TEXT NOT NULL,
@@ -37,16 +36,18 @@ CREATE TABLE "Escalator" (
     "name" VARCHAR(255) NOT NULL,
     "phone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "assignedId" TEXT NOT NULL,
 
     CONSTRAINT "Escalator_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Task_id_key" ON "Task"("id");
+-- CreateTable
+CREATE TABLE "_ActorToTask" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Task_assignedId_key" ON "Task"("assignedId");
+CREATE UNIQUE INDEX "Task_id_key" ON "Task"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Actor_id_key" ON "Actor"("id");
@@ -67,13 +68,16 @@ CREATE UNIQUE INDEX "Escalator_phone_key" ON "Escalator"("phone");
 CREATE UNIQUE INDEX "Escalator_email_key" ON "Escalator"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Escalator_assignedId_key" ON "Escalator"("assignedId");
+CREATE UNIQUE INDEX "_ActorToTask_AB_unique" ON "_ActorToTask"("A", "B");
 
--- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_assignedId_fkey" FOREIGN KEY ("assignedId") REFERENCES "Actor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE INDEX "_ActorToTask_B_index" ON "_ActorToTask"("B");
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_escalatorId_fkey" FOREIGN KEY ("escalatorId") REFERENCES "Escalator"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Escalator" ADD CONSTRAINT "Escalator_assignedId_fkey" FOREIGN KEY ("assignedId") REFERENCES "Actor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_ActorToTask" ADD CONSTRAINT "_ActorToTask_A_fkey" FOREIGN KEY ("A") REFERENCES "Actor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ActorToTask" ADD CONSTRAINT "_ActorToTask_B_fkey" FOREIGN KEY ("B") REFERENCES "Task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
