@@ -67,9 +67,6 @@ export const resolvers = {
 							name: input.escalator.name,
 							email: input.escalator.email,
 							phone: input.escalator.phone,
-							assigned_to: {
-								connect: { id: input.assigned_to.id } // Assuming you have the ID of the assigned actor in the input
-							}
 						}
 					},
 					delayed: input.delayed,
