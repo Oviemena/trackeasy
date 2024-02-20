@@ -7,8 +7,8 @@ export const typeDefs = `#graphql
         deadline: String
         duration: String!
         status: StatusType!
-        assigned_to: [Actor!]!
-        escalator: Escalator!
+        assignedId: Actor!
+        escalatorId: Escalator!
         done: Boolean!
         delayed: Boolean
     }
@@ -16,7 +16,6 @@ export const typeDefs = `#graphql
     type Actor {
         id: ID!
         name: String!
-        tasks: [Task!]!
         email: String!
         phone: String!
     } 
@@ -24,12 +23,9 @@ export const typeDefs = `#graphql
     type Escalator {
         id: ID!
         name: String!
-        email: String
+        email: String!
         phone: String!
-        tasks: [Task!]!
     }
-
-
 
     type Query {
         task(id: ID!): Task! 
@@ -42,7 +38,7 @@ export const typeDefs = `#graphql
     }
 
     type Mutation {
-        createTask (input: CreateTaskQuery) : Task!
+        createTask (input: CreateTaskQuery) : Task
         updateTask(id: ID!, input: UpdateTaskQuery) : Task
         deleteTask(id: ID!, input: DeleteTaskQuery) : Task
     }
@@ -57,7 +53,6 @@ export const typeDefs = `#graphql
         name: String!
         email: String
         phone: String!
-        assigned_to: ActorInput
     }
 
     input CreateTaskQuery {

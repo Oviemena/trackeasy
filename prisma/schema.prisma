@@ -17,7 +17,8 @@ model Task {
   status      StatusType   @default(IN_PROGRESS)
   done        Boolean      @default(false)
   delayed     Boolean      @default(false)
-  assigned_to Actor[]        
+  assignedId String 
+  assigned_to Actor @relation(fields: [assignedId], references: [id])
   escalator   Escalator @relation(fields: [escalatorId], references: [id])  
   escalatorId String  
 }
@@ -25,16 +26,16 @@ model Task {
 model Actor {
   id        String     @id @unique @default(uuid())
   name      String     @db.VarChar(255)
-  email     String     @unique
-  phone     String     @unique
-  task Task[]
+  email     String     
+  phone     String     
+  tasks Task[]
 }
 
 model Escalator {
   id          String @id @unique @default(uuid())
   name        String @db.VarChar(255)
-  phone       String @unique
-  email       String @unique
+  phone       String 
+  email       String 
   tasks      Task[]
 }
 
