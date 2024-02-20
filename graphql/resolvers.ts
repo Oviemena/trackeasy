@@ -13,7 +13,7 @@ export const resolvers = {
 		
 		tasks: async (_: any, _args: any, context: Context) => {
 			return await context.prisma.task.findMany({
-				include: { assigned_to: true, escalators: true },
+				include: { assigned_to: true, escalator: true },
                 take: _args.amount
 			});
 		},
@@ -28,7 +28,7 @@ export const resolvers = {
 
         escalators: async (_: any, _args: any, context: Context) => {
             return await context.prisma.escalator.findMany({
-                include: { task: true, },
+                include: { tasks: true, },
                 take: _args.amount
             });
         },
@@ -49,7 +49,32 @@ export const resolvers = {
 		
 		createTask: async (_: any, {input}: {input: any}, context: Context) => {
 			return await context.prisma.task.create({
-				data: input,
+				data: {
+					name: input.name,
+					priority: input.priority,
+					deadline: input.deadline,
+					duration: input.duration,
+					status: input.status,
+					assigned_to: {
+						create: {
+							name: input.assigned_to.name,
+							email: input.assigned_to.email,
+							phone: input.assigned_to.phone
+						}
+					},
+					escalator: {
+						create: {
+							name: input.escalator.name,
+							email: input.escalator.email,
+							phone: input.escalator.phone,
+							assigned_to: {
+								connect: { id: input.assigned_to.id } // Assuming you have the ID of the assigned actor in the input
+							}
+						}
+					},
+					delayed: input.delayed,
+					done: input.done
+				}
 			});
 		},
 		

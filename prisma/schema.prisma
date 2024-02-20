@@ -8,6 +8,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Task {
+  id          String       @id @unique @default(uuid())
+  name        String       @db.VarChar(255)
+  priority    PriorityType @default(NORMAL)
+  creatdAt    DateTime     @default(now())
+  deadline    DateTime
+  duration    String
+  status      StatusType   @default(IN_PROGRESS)
+  assignedId  String       @unique
+  done        Boolean      @default(false)
+  delayed     Boolean      @default(false)
+  escalatorId String
+  assigned_to Actor        @relation(fields: [assignedId], references: [id])
+  escalator   Escalator    @relation(fields: [escalatorId], references: [id])
+}
+
+model Actor {
+  id        String     @id @unique @default(uuid())
+  name      String     @db.VarChar(255)
+  email     String     @unique
+  phone     String     @unique
+  escalator Escalator?
+  tasks     Task?
+}
+
+model Escalator {
+  id          String @id @unique @default(uuid())
+  name        String @db.VarChar(255)
+  phone       String @unique
+  email       String @unique
+  assignedId  String @unique
+  assigned_to Actor  @relation(fields: [assignedId], references: [id])
+  tasks       Task[]
+}
 
 enum PriorityType {
   LOW
@@ -21,37 +55,3 @@ enum StatusType {
   COMPLETED
 }
 
-model Task {
-  id String @id @default(uuid())
-  name String @db.VarChar(255)
-  priority PriorityType @default(NORMAL)
-  creatdAt DateTime @default(now())
-  deadline DateTime
-  duration DateTime
-  status StatusType @default(IN_PROGRESS)
-  assigned_to Actor? @relation(fields: [assignedId], references: [id])
-  assignedId String @unique
-  done Boolean @default(false)
-  delayed Boolean @default(false)
-  // escalatorId Int
-  escalators Escalator[]
-  //  @relation(fields: [escalatorId], references: [id])
-
-}
-
-model Actor {
-  id String @id @default(uuid())
-  name String @db.VarChar(255)
-  task Task?
-  email String @unique
-  phone String @unique
-}
-
-model Escalator {
-  id String @id @default(uuid())
-  name String @db.VarChar(255)
-  phone String @unique
-  email String @unique
-  task Task? @relation(fields: [taskId], references: [id])
-  taskId String?
-}

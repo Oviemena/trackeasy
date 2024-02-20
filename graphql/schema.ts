@@ -2,23 +2,24 @@ export const typeDefs = `#graphql
     type Task {
         id: ID!
         name: String!
-        priority: PriorityEnum!
+        priority: PriorityType!
         createdAt: String
         deadline: String
-        duration: String
-        status: StatusEnum!
-        assignedId: String
-        escalators: [Escalator]
-        done: Boolean
+        duration: String!
+        status: StatusType!
+        assigned_to: Actor!
+        escalator: Escalator!
+        done: Boolean!
         delayed: Boolean
     }
 
     type Actor {
         id: ID!
         name: String!
-        task: Task!
+        tasks: [Task!]!
         email: String!
         phone: String!
+        escalator: Escalator!
     } 
 
     type Escalator {
@@ -26,47 +27,62 @@ export const typeDefs = `#graphql
         name: String!
         email: String
         phone: String!
-        taskId: String
+        tasks: [Task!]!
+        assigned_to: Actor
     }
 
 
 
     type Query {
-        task(id: ID!): Task 
-        tasks( amount: Int): [Task]
-        actor(id: ID!): Actor
-        actors(amount: Int): [Actor]
-        escalator(id: ID!): Escalator
-        escalators(amount: Int): [Escalator]
+        task(id: ID!): Task! 
+        tasks( amount: Int): [Task!]!
+        actor(id: ID!): Actor!
+        actors(amount: Int): [Actor!]!
+        escalator(id: ID!): Escalator!
+        escalators(amount: Int): [Escalator!]!
 
     }
 
     type Mutation {
-        createTask (input: CreateTaskQuery) : Task
+        createTask (input: CreateTaskQuery) : Task!
         updateTask(id: ID!, input: UpdateTaskQuery) : Task
         deleteTask(id: ID!, input: DeleteTaskQuery) : Task
     }
 
+    input ActorInput {
+        name: String!
+        email: String!
+        phone: String!
+    }
+
+    input EscalatorInput {
+        name: String!
+        email: String
+        phone: String!
+        assigned_to: ActorInput
+    }
+
     input CreateTaskQuery {
         name: String!
-        priority: PriorityEnum!
+        priority: PriorityType!
         deadline: String
-        status: StatusEnum!
-        assigned_to: Actor!
-        assignedId: String
-        escalator: Escalator!
-        escalatorId: String
+        duration: String
+        status: StatusType!
+        assigned_to: ActorInput!
+        escalator: EscalatorInput!
+        delayed: Boolean
+        done: Boolean
     }
 
     input UpdateTaskQuery {
         name: String!
-        priority: PriorityEnum!
+        priority: PriorityType!
         deadline: String
-        status: StatusEnum!
-        assigned_to: Actor!
-        assignedId: String
-        escalator: Escalator!
-        escalatorId: String
+        status: StatusType!
+        assigned_to: ActorInput!
+        escalator: EscalatorInput!
+        done:Boolean!
+        delayed:Boolean
     }
 
     input DeleteTaskQuery {
@@ -76,16 +92,16 @@ export const typeDefs = `#graphql
 
 
 
-enum PriorityEnum {
-    low,
-    normal,
-    high,
+enum PriorityType {
+    LOW,
+    NORMAL,
+    HIGH,
 }
 
-enum StatusEnum {
-    Not_Started,
-    In_Progress,
-    Completed,
+enum StatusType {
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED,
 }
 
 `;
