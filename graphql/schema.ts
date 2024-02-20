@@ -7,7 +7,7 @@ export const typeDefs = `#graphql
         deadline: String
         duration: String!
         status: StatusType!
-        assigned_to: Actor!
+        assigned_to: [Actor!]!
         escalator: Escalator!
         done: Boolean!
         delayed: Boolean
@@ -19,7 +19,6 @@ export const typeDefs = `#graphql
         tasks: [Task!]!
         email: String!
         phone: String!
-        escalator: Escalator!
     } 
 
     type Escalator {
@@ -28,7 +27,6 @@ export const typeDefs = `#graphql
         email: String
         phone: String!
         tasks: [Task!]!
-        assigned_to: Actor
     }
 
 
