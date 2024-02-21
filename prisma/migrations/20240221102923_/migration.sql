@@ -6,46 +6,45 @@ CREATE TYPE "StatusType" AS ENUM ('NOT_STARTED', 'IN_PROGRESS', 'COMPLETED');
 
 -- CreateTable
 CREATE TABLE "Task" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "priority" "PriorityType" NOT NULL DEFAULT 'NORMAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deadline" TIMESTAMP(3) NOT NULL,
     "duration" TEXT NOT NULL,
-    "status" "StatusType" NOT NULL DEFAULT 'IN_PROGRESS',
+    "status" "StatusType" NOT NULL DEFAULT 'NOT_STARTED',
     "done" BOOLEAN NOT NULL DEFAULT false,
     "delayed" BOOLEAN NOT NULL DEFAULT false,
-    "assignedId" TEXT NOT NULL,
-    "escalatorId" TEXT NOT NULL
+
+    CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Actor" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" TEXT NOT NULL
+    "phone" TEXT NOT NULL,
+    "taskIds" INTEGER NOT NULL,
+
+    CONSTRAINT "Actor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Escalator" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "phone" TEXT NOT NULL,
-    "email" TEXT NOT NULL
+    "taskIds" INTEGER NOT NULL,
+
+    CONSTRAINT "Escalator_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Task_id_key" ON "Task"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Actor_id_key" ON "Actor"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Escalator_id_key" ON "Escalator"("id");
+CREATE UNIQUE INDEX "Task_name_key" ON "Task"("name");
 
 -- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_assignedId_fkey" FOREIGN KEY ("assignedId") REFERENCES "Actor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Actor" ADD CONSTRAINT "Actor_taskIds_fkey" FOREIGN KEY ("taskIds") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_escalatorId_fkey" FOREIGN KEY ("escalatorId") REFERENCES "Escalator"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Escalator" ADD CONSTRAINT "Escalator_taskIds_fkey" FOREIGN KEY ("taskIds") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

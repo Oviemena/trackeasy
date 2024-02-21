@@ -1,101 +1,100 @@
 export const typeDefs = `#graphql 
     type Task {
-        id: ID!
-        name: String!
-        priority: PriorityType!
-        createdAt: String
-        deadline: String
-        duration: String!
-        status: StatusType!
-        assignedId: Actor!
-        escalatorId: Escalator!
-        done: Boolean!
-        delayed: Boolean
-    }
+  id: ID!
+  name: String!
+  priority: PriorityType!
+  createdAt: String
+  deadline: String
+  duration: String!
+  status: StatusType!
+  assigned_to: [Actor!]!
+  escalator: [Escalator!]!
+  done: Boolean!
+  delayed: Boolean
+}
 
-    type Actor {
-        id: ID!
-        name: String!
-        email: String!
-        phone: String!
-    } 
+type Actor {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  tasks: [Task!]
+} 
 
-    type Escalator {
-        id: ID!
-        name: String!
-        email: String!
-        phone: String!
-    }
+type Escalator {
+  id: ID!
+  name: String!
+  email: String
+  phone: String!
+  tasks: [Task!]
+}
 
-    type Query {
-        task(id: ID!): Task! 
-        tasks( amount: Int): [Task!]!
-        actor(id: ID!): Actor!
-        actors(amount: Int): [Actor!]!
-        escalator(id: ID!): Escalator!
-        escalators(amount: Int): [Escalator!]!
+type Query {
+  task(id: ID!): Task! 
+  tasks(amount: Int): [Task!]!
+  actor(id: ID!): Actor!
+  actors(amount: Int): [Actor!]!
+  escalator(id: ID!): Escalator!
+  escalators(amount: Int): [Escalator!]!
+}
 
-    }
+type Mutation {
+  createTask(input: CreateTaskQuery): Task
+  updateTask(id: ID!, input: UpdateTaskQuery): Task
+  deleteTask(id: ID!, input: DeleteTaskQuery): Task
+}
 
-    type Mutation {
-        createTask (input: CreateTaskQuery) : Task
-        updateTask(id: ID!, input: UpdateTaskQuery) : Task
-        deleteTask(id: ID!, input: DeleteTaskQuery) : Task
-    }
+input ActorInput {
+  name: String!
+  email: String!
+  phone: String!
+}
 
-    input ActorInput {
-        name: String!
-        email: String!
-        phone: String!
-    }
+input EscalatorInput {
+  name: String!
+  email: String
+  phone: String!
+}
 
-    input EscalatorInput {
-        name: String!
-        email: String
-        phone: String!
-    }
+input CreateTaskQuery {
+  name: String!
+  priority: PriorityType!
+  deadline: String
+  duration: String
+  status: StatusType!
+  assigned_to: ActorInput!
+  escalator: EscalatorInput!
+  delayed: Boolean
+  done: Boolean
+}
 
-    input CreateTaskQuery {
-        name: String!
-        priority: PriorityType!
-        deadline: String
-        duration: String
-        status: StatusType!
-        assigned_to: ActorInput!
-        escalator: EscalatorInput!
-        delayed: Boolean
-        done: Boolean
-    }
+input UpdateTaskQuery {
+  name: String!
+  priority: PriorityType!
+  deadline: String
+  status: StatusType!
+  assigned_to: ActorInput!
+  escalator: EscalatorInput!
+  done: Boolean!
+  delayed: Boolean
+}
 
-    input UpdateTaskQuery {
-        name: String!
-        priority: PriorityType!
-        deadline: String
-        status: StatusType!
-        assigned_to: ActorInput!
-        escalator: EscalatorInput!
-        done:Boolean!
-        delayed:Boolean
-    }
-
-    input DeleteTaskQuery {
-        id: ID!
-    }
-
-
-
+input DeleteTaskQuery {
+  id: ID!
+}
 
 enum PriorityType {
-    LOW,
-    NORMAL,
-    HIGH,
+  LOW
+  NORMAL
+  HIGH
 }
 
 enum StatusType {
-    NOT_STARTED,
-    IN_PROGRESS,
-    COMPLETED,
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
 }
+
 
 `;
 

@@ -1,15 +1,30 @@
 import { Context } from "@/pages/api/graphql";
-
+import { PriorityType, StatusType } from "@prisma/client/edge";
 
 export const resolvers = {
 	Query: {
-		task: async (_: any, _args: any, context: Context) => {
-			return await context.prisma.task.findUnique({
+		task: async (_: any, args: { id : any}, context: Context) => {
+			try {
+			  const task = await context.prisma.task.findUnique({
 				where: {
-					id: _args.id,
+				  id: parseInt(args.id),
 				},
-			});
-		},
+				include: {
+				  assigned_to: true,
+				  escalator: true,
+				},
+			  });
+			  if (!task) {
+				throw new Error('Task not found');
+			  }
+			 
+			  return task;
+			} catch (error) {
+				console.error('Error fetching task:', error);
+				throw new Error("Task doesn't exists!");
+			}
+		  },
+	  
 		
 		tasks: async (_: any, _args: any, context: Context) => {
 			return await context.prisma.task.findMany({
@@ -37,56 +52,41 @@ export const resolvers = {
 	
 	Mutation: {
 		
-		createTask: async (_: any, _args: { input: any }, context: Context) => {
+		createTask: async (_: any, _args: { input: any}, context: Context) => {
 			// Destructure input data
 			const { assigned_to, escalator, ...taskData } = _args.input;
 		
-			// Check if the Actor already exists
-			let assignedActor = null;
-			if (assigned_to.id) {
-			  assignedActor = await context.prisma.actor.findUnique({
-				where: { id: assigned_to.id }
-			  });
-			}
-		
-			// If Actor doesn't exist or id is not provided, create a new one
-			if (!assignedActor) {
-			  assignedActor = await context.prisma.actor.create({
-				data: {
-				  name: assigned_to.name,
-				  email: assigned_to.email,
-				  phone: assigned_to.phone
+
+			let existingTask = await context.prisma.task.findFirst({
+				where: {
+					AND: [
+						{ id: taskData.id},
+						{ name: taskData.name},
+						// Add other conditions to uniquely identify a task if necessary
+					]
 				}
-			  });
-			}
-		
-			// Check if the Escalator already exists
-			let escalatorInstance = null;
-			if (escalator.id) {
-			  escalatorInstance = await context.prisma.escalator.findUnique({
-				where: { id: escalator.id }
-			  });
-			}
-		
-			// If Escalator doesn't exist or id is not provided, create a new one
-			if (!escalatorInstance) {
-			  escalatorInstance = await context.prisma.escalator.create({
-				data: {
-				  name: escalator.name,
-				  email: escalator.email,
-				  phone: escalator.phone
-				}
-			  });
-			}
-		
-			// Create the Task with the provided data and associated Actor and Escalator
-			return await context.prisma.task.create({
-			  data: {
-				...taskData,
-				assigned_to: { connect: { id: assignedActor.id } },
-				escalator: { connect: { id: escalatorInstance.id } }
-			  }
 			});
+
+			if (existingTask) {
+				throw new Error("Task with same name already exists");
+			}
+
+			const newTask = await context.prisma.task.create({
+				data: {
+					...taskData,
+					assigned_to: {
+						create: assigned_to
+					},
+					escalator: {
+						create: escalator
+					}
+				},
+				include: {
+					assigned_to: true,
+					escalator: true
+				}
+			})
+			return newTask
 		  },
 
 		  updateTask: async (_: any, {input}: {input: any}, context: Context) => {

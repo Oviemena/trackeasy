@@ -8,35 +8,35 @@ datasource db {
 }
 
 model Task {
-  id          String       @id @unique @default(uuid())
-  name        String       @db.VarChar(255)
+  id          Int      @id @default(autoincrement())
+  name        String       @db.VarChar(255) @unique
   priority    PriorityType @default(NORMAL)
-  creatdAt    DateTime     @default(now())
+  createdAt    DateTime     @default(now()) 
   deadline    DateTime
   duration    String
-  status      StatusType   @default(IN_PROGRESS)
+  status      StatusType   @default(NOT_STARTED)
   done        Boolean      @default(false)
   delayed     Boolean      @default(false)
-  assignedId String 
-  assigned_to Actor @relation(fields: [assignedId], references: [id])
-  escalator   Escalator @relation(fields: [escalatorId], references: [id])  
-  escalatorId String  
+  assigned_to Actor[]
+  escalator   Escalator[]
 }
 
 model Actor {
-  id        String     @id @unique @default(uuid())
+  id        Int      @id @default(autoincrement())
   name      String     @db.VarChar(255)
-  email     String     
-  phone     String     
-  tasks Task[]
+  email     String    
+  phone String 
+  taskIds Int
+  tasks Task @relation(fields: [taskIds], references: [id])
 }
 
 model Escalator {
-  id          String @id @unique @default(uuid())
+  id          Int      @id @default(autoincrement())
   name        String @db.VarChar(255)
+  email String
   phone       String 
-  email       String 
-  tasks      Task[]
+  taskIds Int
+  tasks Task @relation(fields: [taskIds], references: [id])
 }
 
 enum PriorityType {
