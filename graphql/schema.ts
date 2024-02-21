@@ -1,16 +1,21 @@
+
+
 export const typeDefs = `#graphql 
+    scalar Date
+
     type Task {
-  id: ID!
-  name: String!
-  priority: PriorityType!
-  createdAt: String
-  deadline: String
-  duration: String!
-  status: StatusType!
-  assigned_to: [Actor!]!
-  escalator: [Escalator!]!
-  done: Boolean!
-  delayed: Boolean
+    id: ID!
+    name: String!
+    priority: PriorityType!
+    createdAt: Date
+    updatedAt: Date
+    deadline: Date
+    duration: String!
+    status: StatusType!
+    assigned_to: [Actor!]!
+    escalator: [Escalator!]!
+    done: Boolean!
+    delayed: Boolean
 }
 
 type Actor {
@@ -69,14 +74,14 @@ input CreateTaskQuery {
 }
 
 input UpdateTaskQuery {
-  name: String!
-  priority: PriorityType!
+  name: String
+  priority: PriorityType
   deadline: String
   status: StatusType!
-  assigned_to: ActorInput!
-  escalator: EscalatorInput!
+  assigned_to: ActorInput
+  escalator: EscalatorInput
   done: Boolean!
-  delayed: Boolean
+  delayed: Boolean!
 }
 
 input DeleteTaskQuery {

@@ -34,6 +34,7 @@ CREATE TABLE "Actor" (
 CREATE TABLE "Escalator" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
+    "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "taskIds" INTEGER NOT NULL,
 

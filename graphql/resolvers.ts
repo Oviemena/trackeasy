@@ -1,13 +1,14 @@
+// import { createDateObject, formatDateTime } from "@/lib/utils";
 import { Context } from "@/pages/api/graphql";
-import { PriorityType, StatusType } from "@prisma/client/edge";
+// import { PriorityType, StatusType } from "@prisma/client/edge";
 
 export const resolvers = {
 	Query: {
-		task: async (_: any, args: { id : any}, context: Context) => {
+		task: async (_: any, _args: { id : any}, context: Context) => {
 			try {
 			  const task = await context.prisma.task.findUnique({
 				where: {
-				  id: parseInt(args.id),
+				  id: parseInt(_args.id),
 				},
 				include: {
 				  assigned_to: true,
@@ -17,7 +18,6 @@ export const resolvers = {
 			  if (!task) {
 				throw new Error('Task not found');
 			  }
-			 
 			  return task;
 			} catch (error) {
 				console.error('Error fetching task:', error);
@@ -89,14 +89,41 @@ export const resolvers = {
 			return newTask
 		  },
 
-		  updateTask: async (_: any, {input}: {input: any}, context: Context) => {
-			return await context.prisma.task.update({
-				where: {
-					id: input.id,
-				},
-				data: input,
-			});
-		},
+		   updateTask: async (_: any, _args:{ input: any }, context: Context) => {
+            try {
+				const { id, ...taskData } = _args.input
+
+                const existingTask = await context.prisma.task.findUnique({
+					where: {
+					  id: parseInt(id),
+					},
+					include: {
+					  assigned_to: true,
+					  escalator: true,
+					},
+				  })
+                if (!existingTask) {
+                    throw new Error("Task not found");
+                }
+
+                // Update the task using Prisma's update method
+                const updatedTask = await context.prisma.task.update({
+                    where: {
+                        id: id,
+                    },
+                    data: taskData,
+                    include: {
+                        assigned_to: true,
+                        escalator: true,
+                    },
+                });
+
+                return updatedTask;
+            } catch (error) {
+                console.error('Error updating task:', error);
+                throw new Error("An unexpected error occurred while updating task");
+            }
+        },
 
 		
 		deleteTask: async (_: any, {input}: {input: any}, context: Context) => {
