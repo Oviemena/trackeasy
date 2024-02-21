@@ -46,7 +46,7 @@ type Query {
 type Mutation {
   createTask(input: CreateTaskQuery): Task
   updateTask(id: ID!, input: UpdateTaskQuery): Task
-  deleteTask(id: ID!, input: DeleteTaskQuery): Task
+  deleteTask(input: DeleteTaskQuery): Task
 }
 
 input ActorInput {
