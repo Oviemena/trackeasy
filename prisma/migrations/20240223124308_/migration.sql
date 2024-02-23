@@ -10,6 +10,7 @@ CREATE TABLE "Task" (
     "name" VARCHAR(255) NOT NULL,
     "priority" "PriorityType" NOT NULL DEFAULT 'NORMAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "deadline" TIMESTAMP(3) NOT NULL,
     "duration" TEXT NOT NULL,
     "status" "StatusType" NOT NULL DEFAULT 'NOT_STARTED',
@@ -43,6 +44,12 @@ CREATE TABLE "Escalator" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Task_name_key" ON "Task"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Actor_email_key" ON "Actor"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Escalator_email_key" ON "Escalator"("email");
 
 -- AddForeignKey
 ALTER TABLE "Actor" ADD CONSTRAINT "Actor_taskIds_fkey" FOREIGN KEY ("taskIds") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

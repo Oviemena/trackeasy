@@ -25,7 +25,7 @@ model Task {
 model Actor {
   id        Int      @id @default(autoincrement())
   name      String     @db.VarChar(255)
-  email     String    
+  email     String    @unique
   phone String 
   taskIds Int
   tasks Task @relation(fields: [taskIds], references: [id])
@@ -34,7 +34,7 @@ model Actor {
 model Escalator {
   id          Int      @id @default(autoincrement())
   name        String @db.VarChar(255)
-  email String
+  email String @unique
   phone       String 
   taskIds Int
   tasks Task @relation(fields: [taskIds], references: [id])
